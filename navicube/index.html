@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rotate Cube with Buttons and Rotational Inertia</title>
+    <link rel="stylesheet" href="index.css"></link>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  </head>
+  <body>
+    <div id="info">Visible Face: </div>
+    <div id="rotation-info">Rotation Info: X:0.00° Y:0.00° Z:0.00°</div>
+    <div class="button-container">
+      <button class="snap-button" onclick="mainCube.snapToFace(0)">Snap to Face 1</button>
+      <button class="snap-button" onclick="mainCube.snapToFace(1)">Snap to Face 2</button>
+      <button class="snap-button" onclick="mainCube.snapToFace(2)">Snap to Face 3</button>
+      <button class="snap-button" onclick="mainCube.snapToFace(3)">Snap to Face 4</button>
+      <button class="snap-button" onclick="mainCube.snapToFace(4)">Snap to Face 5</button>
+      <button class="snap-button" onclick="mainCube.snapToFace(5)">Snap to Face 6</button>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>

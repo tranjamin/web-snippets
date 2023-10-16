@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    background-color: rgb(28, 17, 34);
+  }
+
+  #info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    font-size: 14px;
+  }
+
+  #rotation-info {
+    position: absolute;
+    top: 20px; /* Position below the top info */
+    left: 0;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    font-size: 14px;
+  }
+
+  .button-container {
+    position: absolute;
+    top: 60px; /* Position below the rotation info */
+    right: 20px;
+    z-index: 1;
+  }
+
+  .snap-button {
+    margin: 5px;
+  }
