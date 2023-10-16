@@ -3,6 +3,11 @@ const LAVENDER = 0x7a6e88;
 const PURPLE = 0x583d75;
 const BLACK = 0x00;
 
+/**
+ * Superclass for any faces. Takes in a properties structure, name and redirection link.
+ * .highlight(): what should happen when the snapped face is highlighted
+ * .unhighlight(): undoing the above
+ */
 class Face {
     constructor(properties, name, link) {
         this.face = new THREE.MeshBasicMaterial(properties);
@@ -22,6 +27,9 @@ class Face {
 
 }
 
+/**
+ * Subclass of Face which is a simple block colour
+ */
 class ColourFace extends Face {
     constructor(colour, name, link, opacity=null) {
         super({
@@ -34,6 +42,9 @@ class ColourFace extends Face {
     }
 }
 
+/**
+ * Subclass of Face which rasters an image
+ */
 class ImageFace extends Face {
     static textureLoader = new THREE.TextureLoader();
 
@@ -48,6 +59,9 @@ class ImageFace extends Face {
     }
 }
 
+/**
+ * Not currently stable, subclass of Face which embeds HTML elements
+ */
 class HTMLFace extends Face {
     constructor(name, width, height, content) {
         // Create a new canvas with the specified width and height
@@ -76,34 +90,45 @@ class HTMLFace extends Face {
 }
 
 
+/**
+ * The class representing an instance of the NaviCube (Navigation Cube).
+ * Params:
+ *     materials: a list of six Face objects.
+ */
 class NaviCube {
 
     constructor(materials) {
+        // bind recursive methods
         this.animate = this.animate.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
 
+        // stores face data
         this.mat_map = materials;
         this.materials = materials.map(face => face.face);
         this.face_names = materials.map(face => face.name);
+
+        // create scene, renderer and camera
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 10;
         this.renderer = new THREE.WebGLRenderer({ alpha: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // this.renderer.setClearColor(0x808080); // Set the background color to gray
         document.body.appendChild(this.renderer.domElement);
 
+        // set up debug information elements
         this.info = document.getElementById('info');
         this.rotationInfo = document.getElementById('rotation-info');
+
+        // creates cube
         this.cubeSize = 6;
         this.geometry = new THREE.BoxGeometry(this.cubeSize, this.cubeSize, this.cubeSize);
-
         this.cube = new THREE.Mesh(this.geometry, this.materials);
         this.scene.add(this.cube);
 
+        // properties of the cube and scene
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         this.isRotating = false;
@@ -111,24 +136,27 @@ class NaviCube {
         this.inertia = 0.98; // Inertia factor
         this.angularVelocity = new THREE.Vector3(); // Use Vector3 for three rotations
 
-        // Variables to track cube rotation in degrees
+        // variables to track cube rotation in degrees
         this.totalRotationX = 0;
         this.totalRotationY = 0;
         this.totalRotationZ = 0;
 
+        // represents the most visible face
         this.intersects = this.raycaster.intersectObject(this.cube);
         
+        // redirection and spinning
         this.tristate_clickpress = 0;
         this.stopMovement = false;
         this.minRotationSpeed = 0.02;
         this.maxRotationSpeed = 0.02;
 
+        // add event listeners
         window.addEventListener('resize', this.onWindowResize, false);
         document.addEventListener('mousedown', this.onMouseDown, false);
         document.addEventListener('mousemove', this.onMouseMove, false);
         document.addEventListener('mouseup', this.onMouseUp, false);
         
-
+        // start
         this.onWindowResize();
         this.animate();
         this.applyInertia();
@@ -153,28 +181,22 @@ class NaviCube {
     }
 
     updateRotationInfo() {
+        // update rotations
         this.rotationInfo.textContent = `Rotation Info: X:${this.totalRotationX.toFixed(2)}° Y:${this.totalRotationY.toFixed(2)}° Z:${this.totalRotationZ.toFixed(2)}°`;
 
-        // Calculate camera view direction in world space
+        // find most visible face
         var cameraDirection = new THREE.Vector3();
         this.camera.getWorldDirection(cameraDirection);
-
-        // Normalize the view direction
         cameraDirection.normalize();
-
-        // Create a raycaster and set the ray's origin and direction
         this.raycaster.ray.origin.copy(this.camera.position);
         this.raycaster.ray.direction.copy(cameraDirection);
         this.intersects = this.raycaster.intersectObject(this.cube);
 
         if (this.intersects.length > 0) {
+            // find name of the face
             var face = this.intersects[0].face;
             var materialIndex = face.materialIndex;
-
-            // Get the color based on the material index
             var name = this.face_names[materialIndex]
-
-            // Display the color in the top left corner
             this.info.textContent = 'Visible Face: ' + name;
         }
     }
@@ -182,7 +204,7 @@ class NaviCube {
     static snapMapping(faceIndex) {
         switch (faceIndex) {
             case 0:
-                return 3; //
+                return 3;
             case 1:
                 return 2;
             case 2:
@@ -486,6 +508,7 @@ class NaviCube {
 }
 
 
+// single implementation
 materials = [
     new ColourFace(GRAY_PURPLE, "Face 1", "google.com", opacity=0.2),
     new ColourFace(GRAY_PURPLE, "Face 2", "google.com", opacity=0.2),
